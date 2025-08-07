@@ -14,6 +14,9 @@ LANGUAGE = "de-DE"
 FIRST_TARGET_WORD = "Garmin"
 SECOND_TARGET_WORD = "Video speichern"
 
+# Words that also match the target if it can't recognize what you're saying
+SECONDARY_MATCHES = ["gar"]
+
 # Files of the audio, have to be .wav
 FILENAME_ONE = "GarminListening.wav"
 FILENAME_TWO = "GarminConfirmed.wav"
@@ -48,10 +51,12 @@ def play_sound(filename):
     wf.close()
 
 def is_word_close_enough(recognized_text, target_phrase, cutoff=0.8):
-    matches = get_close_matches(target_phrase.lower(), [recognized_text.lower()], n=1, cutoff=cutoff)
-    return bool(matches)
+    return target_phrase.lower() in recognized_text.lower()
 
-def listen_and_recognize(prompt, target_word):
+def listen_and_recognize(prompt, target_word, fallback_matches=None):
+    if fallback_matches is None:
+        fallback_matches = []
+
     with sr.Microphone(device_index=MICROPHONE_DEVICE_INDEX) as source:
         print(prompt)
         audio = recognizer.listen(source)
@@ -59,7 +64,15 @@ def listen_and_recognize(prompt, target_word):
         try:
             text = recognizer.recognize_google(audio, language=LANGUAGE)
             print("You said:", text)
-            return is_word_close_enough(text, target_word)
+            text_lower = text.lower()
+
+            if any(word in text_lower for word in target_word):
+                return True
+
+            if any(word in text_lower for word in fallback_matches):
+                print("[Fuzzy match accepted]")
+                return True
+
         except sr.UnknownValueError:
             print("Sorry, I could not understand the audio.")
         except sr.RequestError as e:
