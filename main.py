@@ -95,12 +95,14 @@ try:
         if listen_and_recognize("\nSay Garmin", FIRST_TARGET_WORDS, fallback_matches=SECONDARY_MATCHES):
             play_sound(FILENAME_ONE, OUTPUT_DEVICE_INDEX)
             print(", ".join(FIRST_TARGET_WORDS) + "!")
-            if listen_and_recognize("\nSay video speichern", SECOND_TARGET_WORDS):
-                print(", ".join(SECOND_TARGET_WORDS) + "!")
-                pyautogui.hotkey('ctrl', ',')
-                play_sound(FILENAME_TWO, OUTPUT_DEVICE_INDEX)
-            else:
-                print("Video not detected")
+            while True:
+                if listen_and_recognize("\nSay video speichern", SECOND_TARGET_WORDS):
+                    print(", ".join(SECOND_TARGET_WORDS) + "!")
+                    pyautogui.hotkey('ctrl', ',')
+                    play_sound(FILENAME_TWO, OUTPUT_DEVICE_INDEX)
+                    break
+                else:
+                    print("Video not detected, try again...")
         else:
             print("Garmin not detected")
 
