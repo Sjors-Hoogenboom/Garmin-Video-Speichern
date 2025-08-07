@@ -3,7 +3,7 @@
 A simple python project that listens to a trigger word/ phrase which plays the Garmin beep.   
 After that, it will listen to a second phrase which in turn plays the "video saved" sound from Garmin, just like the original meme
 
-Also does a key combination after the two phrases are said, which should be set to a clipping software's own keybind
+Also does a key combination after the two phrases are said, which should be set to a clipping software's own keybind, so it actually saves a video just like how Garmin dashcams work
 
 ## How to setup
 
