@@ -4,7 +4,6 @@ from difflib import get_close_matches
 import pyaudio
 import pyautogui
 import speech_recognition as sr
-from pydub import AudioSegment
 
 recognizer = sr.Recognizer()
 
@@ -57,15 +56,23 @@ def listen_and_recognize(prompt, target_word):
 
     return False
 
+with sr.Microphone(device_index=MICROPHONE_DEVICE_INDEX) as source:
+    print("Calibrating microphone for background noise...")
+    recognizer.adjust_for_ambient_noise(source, duration=0.5)
 
-if listen_and_recognize("Say Garmin", "Garmin"):
-    play_sound("GarminListening.wav")
-    print("Garmin!")
-    if listen_and_recognize("Say video speichern", "Video speichern"):
-        print("Video speichern!")
-        pyautogui.hotkey('ctrl', ',')
-        play_sound("GarminConfirmed.wav")
-    else:
-        print("Video not detected")
-else:
-    print("Garmin not detected")
+try:
+    while True:
+        if listen_and_recognize("Say Garmin", "Garmin"):
+            play_sound("GarminListening.wav")
+            print("Garmin!")
+            if listen_and_recognize("Say video speichern", "Video speichern"):
+                print("Video speichern!")
+                pyautogui.hotkey('ctrl', ',')
+                play_sound("GarminConfirmed.wav")
+            else:
+                print("Video not detected")
+        else:
+            print("Garmin not detected")
+
+finally:
+    p.terminate()
