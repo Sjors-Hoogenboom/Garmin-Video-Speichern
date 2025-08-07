@@ -1,3 +1,4 @@
+import time
 import wave
 
 import keyboard
@@ -106,8 +107,9 @@ try:
                 second_prompt = f"\nSay {', '.join(SECOND_TARGET_WORDS)}"
                 if listen_and_recognize(second_prompt, SECOND_TARGET_WORDS):
                     print(", ".join(SECOND_TARGET_WORDS) + "!")
-                    press_hotkey_combination(HOTKEY_COMBINATION)
                     play_sound(FILENAME_TWO, OUTPUT_DEVICE_INDEX)
+                    time.sleep(3)
+                    press_hotkey_combination(HOTKEY_COMBINATION)
                     break
                 else:
                     print("Video not detected, try again...")
