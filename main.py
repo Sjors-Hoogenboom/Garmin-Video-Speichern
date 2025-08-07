@@ -21,8 +21,8 @@ p = pyaudio.PyAudio()
 #     info = p.get_device_info_by_index(i)
 #     print(f"{i}: {info['name']} (Output: {info['maxOutputChannels']})")
 
-def play_sound():
-    wf = wave.open("GarminListening.wav", "rb")
+def play_sound(filename):
+    wf = wave.open(filename, "rb")
     stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
                     channels=wf.getnchannels(),
                     rate=wf.getframerate(),
@@ -41,22 +41,31 @@ def is_word_close_enough(recognized_text, target_word, cutoff=0.8):
     matches = get_close_matches(target_word.lower(), recognized_text.lower().split(), n=1, cutoff=cutoff)
     return bool(matches)
 
+def listen_and_recognize(prompt, target_word):
+    with sr.Microphone(device_index=MICROPHONE_DEVICE_INDEX) as source:
+        print(prompt)
+        recognizer.adjust_for_ambient_noise(source)
+        audio = recognizer.listen(source)
 
-with sr.Microphone(MICROPHONE_DEVICE_INDEX) as source:
-    print("Say something...")
-    recognizer.adjust_for_ambient_noise(source)
-    audio = recognizer.listen(source)
+        try:
+            text = recognizer.recognize_google(audio, language="de-DE")
+            print("You said:", text)
+            return is_word_close_enough(text, target_word)
+        except sr.UnknownValueError:
+            print("Sorry, I could not understand the audio.")
+        except sr.RequestError as e:
+            print("Could not request results:", e)
 
-    try:
-        text = recognizer.recognize_google(audio, language="de-DE")
-        print("You said:", text)
+    return False
 
-        if is_word_close_enough(text, "Garmin"):
-            play_sound()
-            print("Garmin!")
-        else:
-            print("Try again")
-    except sr.UnknownValueError:
-        print("Sorry, I could not understand the audio.")
-    except sr.RequestError as e:
-        print("Could not request results from Google Speech Recognition service:", e)
+
+if listen_and_recognize("Say Garmin", "Garmin"):
+    play_sound("GarminListening.wav")
+    print("Garmin!")
+    if listen_and_recognize("Say video speichern", "Video"):
+        print("Video speichern!")
+        play_sound("GarminConfirmed.wav")
+    else:
+        print("Video not detected")
+else:
+    print("Garmin not detected")
