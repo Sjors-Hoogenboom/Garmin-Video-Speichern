@@ -21,7 +21,7 @@ SECONDARY_MATCHES = ["gar"]
 FILENAME_ONE = "GarminListening.wav"
 FILENAME_TWO = "GarminConfirmed.wav"
 
-OUTPUT_DEVICE_INDEX = 9
+OUTPUT_DEVICE_INDEX = [9]
 MICROPHONE_DEVICE_INDEX = 4
 p = pyaudio.PyAudio()
 
@@ -34,20 +34,31 @@ p = pyaudio.PyAudio()
 #     info = p.get_device_info_by_index(i)
 #     print(f"{i}: {info['name']} (Output: {info['maxOutputChannels']})")
 
-def play_sound(filename):
+def play_sound(filename, output_device_indices):
     wf = wave.open(filename, "rb")
-    stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
-                    channels=wf.getnchannels(),
-                    rate=wf.getframerate(),
-                    output=True,
-                    output_device_index=OUTPUT_DEVICE_INDEX)
+    streams = []
+
+    for device_index in output_device_indices:
+        stream = p.open(
+                format=p.get_format_from_width(wf.getsampwidth()),
+                channels=wf.getnchannels(),
+                rate=wf.getframerate(),
+                output=True,
+                output_device_index=device_index
+        )
+        streams.append(stream)
+
+    wf.rewind()
     data = wf.readframes(1024)
     while data:
-        stream.write(data)
+        for stream in streams:
+            stream.write(data)
         data = wf.readframes(1024)
 
-    stream.stop_stream()
-    stream.close()
+    for stream in streams:
+        stream.stop_stream()
+        stream.close()
+
     wf.close()
 
 def listen_and_recognize(prompt, target_words, fallback_matches=None):
@@ -82,12 +93,12 @@ with sr.Microphone(device_index=MICROPHONE_DEVICE_INDEX) as source:
 try:
     while True:
         if listen_and_recognize("\nSay Garmin", FIRST_TARGET_WORDS, fallback_matches=SECONDARY_MATCHES):
-            play_sound(FILENAME_ONE)
+            play_sound(FILENAME_ONE, OUTPUT_DEVICE_INDEX)
             print(", ".join(FIRST_TARGET_WORDS) + "!")
             if listen_and_recognize("\nSay video speichern", SECOND_TARGET_WORDS):
                 print(", ".join(SECOND_TARGET_WORDS) + "!")
                 pyautogui.hotkey('ctrl', ',')
-                play_sound(FILENAME_TWO)
+                play_sound(FILENAME_TWO, OUTPUT_DEVICE_INDEX)
             else:
                 print("Video not detected")
         else:
