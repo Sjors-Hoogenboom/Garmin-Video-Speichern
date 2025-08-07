@@ -8,16 +8,15 @@ from pydub import AudioSegment
 
 recognizer = sr.Recognizer()
 
-sound = AudioSegment.from_wav("GarminListening.wav").set_channels(1)
-
 OUTPUT_DEVICE_INDEX = 9
 MICROPHONE_DEVICE_INDEX = 4
 p = pyaudio.PyAudio()
 
-# Uncomment to find out the index of the microphone input you want to use, recommended to use pure microphone and not voicemod/ filtered audio
+# Uncomment to find the index of the microphone input you want to use, recommended to use pure microphone and not voicemod/ filtered audio
 # for index, name in enumerate(sr.Microphone.list_microphone_names()):
 #     print(f"Audio {index} name: {name}")
 
+# Uncomment to find the index of the output you want to use
 # for i in range(p.get_device_count()):
 #     info = p.get_device_info_by_index(i)
 #     print(f"{i}: {info['name']} (Output: {info['maxOutputChannels']})")
@@ -45,7 +44,6 @@ def is_word_close_enough(recognized_text, target_phrase, cutoff=0.8):
 def listen_and_recognize(prompt, target_word):
     with sr.Microphone(device_index=MICROPHONE_DEVICE_INDEX) as source:
         print(prompt)
-        recognizer.adjust_for_ambient_noise(source)
         audio = recognizer.listen(source)
 
         try:
