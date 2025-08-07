@@ -1,5 +1,4 @@
 import wave
-from difflib import get_close_matches
 
 import pyaudio
 import pyautogui
@@ -35,7 +34,7 @@ p = pyaudio.PyAudio()
 # Uncomment to find the index of the output you want to use
 # for i in range(p.get_device_count()):
 #     info = p.get_device_info_by_index(i)
-#     print(f"{i}: {info['name']} (Output: {info['maxOutputChannels']})")
+#     print(f"Output {i}: {info['name']} (Output: {info['maxOutputChannels']})")
 
 def play_sound(filename, output_device_indices):
     wf = wave.open(filename, "rb")
