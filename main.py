@@ -11,10 +11,10 @@ recognizer = sr.Recognizer()
 LANGUAGE = "de-DE"
 
 # These are the words that the application will look for
-FIRST_TARGET_WORD = "Garmin"
-SECOND_TARGET_WORD = "Video speichern"
+FIRST_TARGET_WORDS = ["Garmin"]
+SECOND_TARGET_WORDS = ["Video speichern"]
 
-# Words that also match the target if it can't recognize what you're saying
+# Words that also match the target for if it can't recognize what you're saying
 SECONDARY_MATCHES = ["gar"]
 
 # Files of the audio, have to be .wav
@@ -50,10 +50,7 @@ def play_sound(filename):
     stream.close()
     wf.close()
 
-def is_word_close_enough(recognized_text, target_phrase, cutoff=0.8):
-    return target_phrase.lower() in recognized_text.lower()
-
-def listen_and_recognize(prompt, target_word, fallback_matches=None):
+def listen_and_recognize(prompt, target_words, fallback_matches=None):
     if fallback_matches is None:
         fallback_matches = []
 
@@ -66,11 +63,10 @@ def listen_and_recognize(prompt, target_word, fallback_matches=None):
             print("You said:", text)
             text_lower = text.lower()
 
-            if any(word in text_lower for word in target_word):
+            if any(target.lower() in text_lower for target in target_words):
                 return True
 
-            if any(word in text_lower for word in fallback_matches):
-                print("[Fuzzy match accepted]")
+            if any(fallback.lower() in text_lower for fallback in fallback_matches):
                 return True
 
         except sr.UnknownValueError:
@@ -85,11 +81,11 @@ with sr.Microphone(device_index=MICROPHONE_DEVICE_INDEX) as source:
 
 try:
     while True:
-        if listen_and_recognize("\nSay Garmin", FIRST_TARGET_WORD):
+        if listen_and_recognize("\nSay Garmin", FIRST_TARGET_WORDS, fallback_matches=SECONDARY_MATCHES):
             play_sound(FILENAME_ONE)
-            print(FIRST_TARGET_WORD + "!")
-            if listen_and_recognize("\nSay video speichern", SECOND_TARGET_WORD):
-                print(SECOND_TARGET_WORD + "!")
+            print(", ".join(FIRST_TARGET_WORDS) + "!")
+            if listen_and_recognize("\nSay video speichern", SECOND_TARGET_WORDS):
+                print(", ".join(SECOND_TARGET_WORDS) + "!")
                 pyautogui.hotkey('ctrl', ',')
                 play_sound(FILENAME_TWO)
             else:
