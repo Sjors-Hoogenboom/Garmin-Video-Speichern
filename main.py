@@ -1,8 +1,9 @@
 import wave
-
-import speech_recognition as sr
-import pyaudio
 from difflib import get_close_matches
+
+import pyaudio
+import pyautogui
+import speech_recognition as sr
 from pydub import AudioSegment
 
 recognizer = sr.Recognizer()
@@ -37,8 +38,8 @@ def play_sound(filename):
     stream.close()
     wf.close()
 
-def is_word_close_enough(recognized_text, target_word, cutoff=0.8):
-    matches = get_close_matches(target_word.lower(), recognized_text.lower().split(), n=1, cutoff=cutoff)
+def is_word_close_enough(recognized_text, target_phrase, cutoff=0.8):
+    matches = get_close_matches(target_phrase.lower(), [recognized_text.lower()], n=1, cutoff=cutoff)
     return bool(matches)
 
 def listen_and_recognize(prompt, target_word):
@@ -62,8 +63,9 @@ def listen_and_recognize(prompt, target_word):
 if listen_and_recognize("Say Garmin", "Garmin"):
     play_sound("GarminListening.wav")
     print("Garmin!")
-    if listen_and_recognize("Say video speichern", "Video"):
+    if listen_and_recognize("Say video speichern", "Video speichern"):
         print("Video speichern!")
+        pyautogui.hotkey('ctrl', ',')
         play_sound("GarminConfirmed.wav")
     else:
         print("Video not detected")
