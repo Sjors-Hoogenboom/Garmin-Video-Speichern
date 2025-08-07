@@ -9,7 +9,7 @@ Also does a key combination after the two phrases are said, which should be set 
 
 1. Change the following variables:
 
-    1. **HOTKEY_COMBINATION = ('ctrl', ',')**, which should be the same as the keybind on your clipping software
+    1. **HOTKEY_COMBINATION = ('ctrl', 'comma')**, which should be the same as the keybind on your clipping software
    2. **SECONDARY_MATCHES = ["gar"]**, This is the output device where the sound will be played.  
        To get the correct output index, uncomment in main.py the following code to see all available output devices:
         ```python

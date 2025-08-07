@@ -1,13 +1,13 @@
 import wave
 
+import keyboard
 import pyaudio
-import pyautogui
 import speech_recognition as sr
 
 recognizer = sr.Recognizer()
 
 # The key combination for clipping with your clip software
-HOTKEY_COMBINATION = ('ctrl', ',')
+HOTKEY_COMBINATION = ('ctrl', 'comma')
 
 # The original meme is German, change to en-US for English speech recognition
 LANGUAGE = "de-DE"
@@ -63,6 +63,10 @@ def play_sound(filename, output_device_indices):
 
     wf.close()
 
+def press_hotkey_combination(keys):
+    combo = '+'.join(keys)
+    keyboard.send(combo)
+
 def listen_and_recognize(prompt, target_words, fallback_matches=None):
     if fallback_matches is None:
         fallback_matches = []
@@ -102,7 +106,7 @@ try:
                 second_prompt = f"\nSay {', '.join(SECOND_TARGET_WORDS)}"
                 if listen_and_recognize(second_prompt, SECOND_TARGET_WORDS):
                     print(", ".join(SECOND_TARGET_WORDS) + "!")
-                    pyautogui.hotkey(*HOTKEY_COMBINATION)
+                    press_hotkey_combination(HOTKEY_COMBINATION)
                     play_sound(FILENAME_TWO, OUTPUT_DEVICE_INDEX)
                     break
                 else:
