@@ -7,6 +7,9 @@ import speech_recognition as sr
 
 recognizer = sr.Recognizer()
 
+# The key combination for clipping with your clip software
+HOTKEY_COMBINATION = ('ctrl', ',')
+
 # The original meme is German, change to en-US for English speech recognition
 LANGUAGE = "de-DE"
 
@@ -100,7 +103,7 @@ try:
                 second_prompt = f"\nSay {', '.join(SECOND_TARGET_WORDS)}"
                 if listen_and_recognize(second_prompt, SECOND_TARGET_WORDS):
                     print(", ".join(SECOND_TARGET_WORDS) + "!")
-                    pyautogui.hotkey('ctrl', ',')
+                    pyautogui.hotkey(*HOTKEY_COMBINATION)
                     play_sound(FILENAME_TWO, OUTPUT_DEVICE_INDEX)
                     break
                 else:
