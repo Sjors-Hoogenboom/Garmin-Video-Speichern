@@ -92,11 +92,13 @@ with sr.Microphone(device_index=MICROPHONE_DEVICE_INDEX) as source:
 
 try:
     while True:
-        if listen_and_recognize("\nSay Garmin", FIRST_TARGET_WORDS, fallback_matches=SECONDARY_MATCHES):
+        first_prompt = f"\nSay {', '.join(FIRST_TARGET_WORDS)}"
+        if listen_and_recognize(first_prompt, FIRST_TARGET_WORDS, fallback_matches=SECONDARY_MATCHES):
             play_sound(FILENAME_ONE, OUTPUT_DEVICE_INDEX)
             print(", ".join(FIRST_TARGET_WORDS) + "!")
             while True:
-                if listen_and_recognize("\nSay video speichern", SECOND_TARGET_WORDS):
+                second_prompt = f"\nSay {', '.join(SECOND_TARGET_WORDS)}"
+                if listen_and_recognize(second_prompt, SECOND_TARGET_WORDS):
                     print(", ".join(SECOND_TARGET_WORDS) + "!")
                     pyautogui.hotkey('ctrl', ',')
                     play_sound(FILENAME_TWO, OUTPUT_DEVICE_INDEX)
