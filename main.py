@@ -1,6 +1,7 @@
 import time
 import wave
 
+import audioop
 import keyboard
 import pyaudio
 import speech_recognition as sr
@@ -18,7 +19,7 @@ FIRST_TARGET_WORDS = ["Garmin"]
 SECOND_TARGET_WORDS = ["Video speichern"]
 
 # Words that also match the target for if it can't recognize what you're saying
-SECONDARY_MATCHES = ["gar"]
+SECONDARY_MATCHES = ["gar", "Video speich"]
 
 # Files of the audio, have to be .wav
 FILENAME_ONE = "GarminListening.wav"
@@ -37,7 +38,7 @@ p = pyaudio.PyAudio()
 #     info = p.get_device_info_by_index(i)
 #     print(f"Output {i}: {info['name']} (Output: {info['maxOutputChannels']})")
 
-def play_sound(filename, output_device_indices):
+def play_sound(filename, output_device_indices, volume_boost=9):
     wf = wave.open(filename, "rb")
     streams = []
 
@@ -54,8 +55,9 @@ def play_sound(filename, output_device_indices):
     wf.rewind()
     data = wf.readframes(1024)
     while data:
+        louder_data = audioop.mul(data, wf.getsampwidth(), volume_boost)
         for stream in streams:
-            stream.write(data)
+            stream.write(louder_data)
         data = wf.readframes(1024)
 
     for stream in streams:
