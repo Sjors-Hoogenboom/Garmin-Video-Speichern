@@ -23,7 +23,7 @@ Also does a key combination after the two phrases are said, which should be set 
       for index, name in enumerate(sr.Microphone.list_microphone_names()):
           print(f"Audio {index} name: {name}")
       ```
-   4. **SECONDARY_MATCHES = ["gar"]**, A list of backup words if it can't interpret what you are saying correctly (only contains "gar" at the moment, since saying "okay Garmin" would result in it thinking I said "ok Gar" every so often)
+   4. **SECONDARY_MATCHES = ["gar"]**, A list of backup words if it can't interpret what you are saying correctly (for example, contains "gar" at the moment, since saying "okay Garmin" would result in it thinking I said "ok Gar" every so often)
 
 
 2. #### optional: change language
