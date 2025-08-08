@@ -19,7 +19,7 @@ FIRST_TARGET_WORDS = ["Garmin"]
 SECOND_TARGET_WORDS = ["Video speichern"]
 
 # Words that also match the target for if it can't recognize what you're saying
-SECONDARY_MATCHES = ["gar", "Video speich"]
+SECONDARY_MATCHES = ["gar", "Video", "Kamin"]
 
 # Files of the audio, have to be .wav
 FILENAME_ONE = "GarminListening.wav"
@@ -110,7 +110,6 @@ try:
                 if listen_and_recognize(second_prompt, SECOND_TARGET_WORDS):
                     print(", ".join(SECOND_TARGET_WORDS) + "!")
                     play_sound(FILENAME_TWO, OUTPUT_DEVICE_INDEX)
-                    time.sleep(3)
                     press_hotkey_combination(HOTKEY_COMBINATION)
                     break
                 else:
